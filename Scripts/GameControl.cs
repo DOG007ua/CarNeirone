@@ -11,25 +11,21 @@ public class GameControl : MonoBehaviour {
     GameObject[] massCar;
     GeneticAlgoritm geneticAlgoritm;
     public int coefSpeedGame = 1;
-    public List<int> amountCarLifeList = new List<int>();
-    public int amountCarLife;
+    public List<int> amountCarLifeList = new List<int>();       //колиичество машинок в живых на каждом поколении
+    public int amountCarLife;                                   //колличество живых машинок сейчас
     public GameObject startCameraPosition;
 
     bool cameraOnCar = false;
     bool mouseOnCar = false;
 
     InformationCar informationCar = new InformationCar();
-    public float StepMutation;                     //Информация
-    int numberMutation;
 
-
-    Car carOutCamera;
+    Car carOutCamera;                                           //ссылка на машину, на которой находится камера
 
     void Start()
     {
         CreateMassCar();
         geneticAlgoritm = new GeneticAlgoritm();
-        MyClass.rand = new System.Random();
     }
 	
 	void Update () {
@@ -46,8 +42,6 @@ public class GameControl : MonoBehaviour {
         }
     }
 
-
-
     GameObject CreateCar(int id)
     {
         amountCarLife = amountCar;
@@ -63,7 +57,6 @@ public class GameControl : MonoBehaviour {
     void CreateNewNeironNetWork(Car[] massCar)
     {        
         NeironNetWork[] massNeiron = geneticAlgoritm.CreateNewCar(massCar);
-        StepMutation = geneticAlgoritm.StepMutationNow;
         for (int i = 0; i < massCar.Length; i++)
         {
             massCar[i].GetComponent<Car>().neironNetWork = massNeiron[i];
@@ -88,11 +81,11 @@ public class GameControl : MonoBehaviour {
         }
         CreateNewNeironNetWork(car);
         RestartPositionCar(massCar);
-
-
-        //StepMutation = GeneticAlgoritm.stepMutationPublic;
     }
-
+    /// <summary>
+    /// Перебросить все машины на старт
+    /// </summary>
+    /// <param name="massCar"></param>
     void RestartPositionCar(GameObject[] massCar)
     {
         for (int i = 0; i < massCar.Length; i++)
@@ -111,7 +104,10 @@ public class GameControl : MonoBehaviour {
             Destroy(massCar[i].gameObject);
         }
     }
-
+    /// <summary>
+    /// Его вызывает событие при столкновении машины
+    /// </summary>
+    /// <param name="car"></param>
     void CollisionFunction(Car car)
     {
         amountCarLife--;
@@ -119,7 +115,6 @@ public class GameControl : MonoBehaviour {
         {
             NewGeneration();
         }
-
     }
 
     void MouseInformation()

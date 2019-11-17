@@ -123,11 +123,9 @@ public class GeneticAlgoritm
         NeironNetWork[] returnNeiron = new NeironNetWork[amountReturn];
         for (int i = 0; i < amountReturn; i++)
         {
-            int pos = MyClass.rand.Next(0, amountBestParent);
+            int pos = MyRand.Range(0, amountBestParent);
+            //int pos = MyClass.rand.Next(0, amountBestParent);
             returnNeiron[i] = Mutation(massNeironNetWork[pos]);
-            //returnNeiron[i].id = i;
-            //returnNeiron[i].idParent = massNeironNetWork[pos].id;
-            //returnNeiron[i].placeParent = massNeironNetWork[pos].place;
         }
         return returnNeiron;
     }
@@ -151,8 +149,10 @@ public class GeneticAlgoritm
         NeironNetWork[] parentNeiron = new NeironNetWork[2];
         for (int i = 0; i < amountReturn; i++)
         {
-            parentNeiron[0] = massNeironNetWork[MyClass.rand.Next(0, amountReturn)];
-            parentNeiron[1] = massNeironNetWork[MyClass.rand.Next(0, amountReturn)];
+            //parentNeiron[0] = massNeironNetWork[MyClass.rand.Next(0, amountReturn)];
+            //parentNeiron[1] = massNeironNetWork[MyClass.rand.Next(0, amountReturn)];
+            parentNeiron[0] = massNeironNetWork[MyRand.Range(0, amountReturn)];
+            parentNeiron[1] = massNeironNetWork[MyRand.Range(0, amountReturn)];
             returnNeiron[i] = ExchangeWeigth(parentNeiron);
         }
         return returnNeiron;
@@ -163,7 +163,7 @@ public class GeneticAlgoritm
         NeironNetWork[] returnNeiron = new NeironNetWork[amountReturn];
         for (int i = 0; i < amountReturn; i++)
         {
-            returnNeiron[i] = Mutation(massNeironNetWork[MyClass.rand.Next(0, amountReturn)]);
+            returnNeiron[i] = Mutation(massNeironNetWork[MyRand.Range(0, amountReturn)]);
         }
         return returnNeiron;
     }
@@ -178,7 +178,7 @@ public class GeneticAlgoritm
             {
                 for (int k = 0; k < returnNeiron.MassNeiron[i][j].weight.Length; k++)
                 {
-                    int poz = MyClass.rand.Next(0, 2);
+                    int poz = MyRand.Range(0, 2);
                     //returnNeiron.MassNeiron[i][j].weight[k] = MutationWeigth(massNeironNetWork[poz].MassNeiron[i][j].weight[k]);
                 }
             }

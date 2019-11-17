@@ -11,8 +11,8 @@ public class Car : MonoBehaviour, IComparable
     public float distance = 0;
     float speed;
     float rotation;
-    public float[] neironParam = new float[2];
-    public int numberLap = 0;
+    public float[] neironParam = new float[2];      //выходные значения нейрона. Для отладки
+    public int numberLap = 0;                       //номер круга
 
     float minSpeed = 0.3f;
     float maxSpeed = 1.0f;
@@ -20,23 +20,24 @@ public class Car : MonoBehaviour, IComparable
     float maxAcceleretion = 0.05f;
     float maxAngleRotation = 0.2f;
     
-    public bool crash = false;
-    public NeironNetWork neironNetWork;
-    Vector3[] vector = new Vector3[3];
+    public bool crash = false;                  //столкнулась ли машина с препятствием
+    public NeironNetWork neironNetWork;         //нейронная сеть машинки
+    Vector3[] vectorColorRay = new Vector3[3];  //хранит цветные лучи
     Color[] colorRay = new Color[3];
 
     public int coefSpeedGame = 1;
-    public bool cameraOncar = false;
+    public bool cameraOncar = false;            //находится ли камера на машинке. Перенести в скрипт камеры!!!!!!!!!!!
 
-    public Light ligthStop;
+    public Light ligthStop;                     //Освещение. Сделать структуру??? Или может коллекцией Dictionary?????????????? 
     public Light ligthRigth;
     public Light ligthLeft;
     public Light ligthRigthFront;
     public Light ligthLeftFront;
     public Light ligthMove;
-    public GameObject cameraPosition;
 
-    public event MyClass.CollisionCar eventCollisionCar;
+    public GameObject cameraPosition;           //куда будет ставиться камера
+
+    public event MyClass.CollisionCar eventCollisionCar;        //событие при столкновении
 
     public float RotationReturn { get { return rotation; } }
     public float Speed
@@ -53,7 +54,7 @@ public class Car : MonoBehaviour, IComparable
         }
     }
 
-    public int CompareTo(object obj)
+    public int CompareTo(object obj)        //сортировка по расстоянию
     {
         Car car = obj as Car;
 
@@ -80,8 +81,8 @@ public class Car : MonoBehaviour, IComparable
     void Update()
     {
         if (crash) return;
-        //CoefSpeedGame();
-        CalculationDistanceRay();
+        //CoefSpeedGame();      //ускорение игры
+        CalculationDistanceRay();   
         WorkNeiron();
         Move();
         CalculationDistanceMove();
@@ -104,33 +105,37 @@ public class Car : MonoBehaviour, IComparable
     {        
         float[] massRez = neironNetWork.Start(distanceRay);
         ControlNeiron(massRez[0] - massRez[1], massRez[2] - massRez[3]);
-        neironParam[0] = massRez[0] - massRez[1];
-        neironParam[1] = massRez[3] - massRez[2];
+        neironParam[0] = massRez[0] - massRez[1];       //укорение??
+        neironParam[1] = massRez[3] - massRez[2];       //поворот??
     }
-
+    /// <summary>
+    /// расчёт растояния до препятствия
+    /// </summary>
     void CalculationDistanceRay()
     {
         RaycastHit[] hit = new RaycastHit[3];
         Ray[] ray = new Ray[3];
         float maxD = 30.0f;
 
-        vector[0] = (Quaternion.AngleAxis(-30, Vector3.down) * transform.forward);
-        vector[1] = (Quaternion.AngleAxis(0, Vector3.down) * transform.forward); 
-        vector[2] = (Quaternion.AngleAxis(30, Vector3.down) * transform.forward) ;
+        vectorColorRay[0] = (Quaternion.AngleAxis(-30, Vector3.down) * transform.forward);
+        vectorColorRay[1] = (Quaternion.AngleAxis(0, Vector3.down) * transform.forward); 
+        vectorColorRay[2] = (Quaternion.AngleAxis(30, Vector3.down) * transform.forward) ;
 
 
         for (int i = 0; i < 3; i++)
         {
-            ray[i] = new Ray(transform.position, vector[i]);
+            ray[i] = new Ray(transform.position, vectorColorRay[i]);
             if (Physics.Raycast(ray[i], out hit[i]) && hit[i].transform.gameObject.tag == "Let")
             {
-                Debug.DrawRay(transform.position, vector[i] * hit[i].distance, colorRay[i]);                
+                Debug.DrawRay(transform.position, vectorColorRay[i] * hit[i].distance, colorRay[i]);                
                 distanceRay[i] = hit[i].distance;
                 if (distanceRay[i] > maxD) distanceRay[i] = maxD;
             }
         }
     }
-
+    /// <summary>
+    /// передвижение
+    /// </summary>
     public void Move()
     {
         transform.position += transform.forward * Speed;
@@ -162,7 +167,10 @@ public class Car : MonoBehaviour, IComparable
             ligthStop.enabled = true;
         }
     }
-
+    /// <summary>
+    /// поворот
+    /// </summary>
+    /// <param name="angle">угол поворота</param>
     public void Rotation(float angle)
     {
         rotation = angle;
@@ -198,7 +206,9 @@ public class Car : MonoBehaviour, IComparable
         SetSpeed(koefSpeed * maxAcceleretion);
         Rotation(koefRotation * maxAngleRotation);
     }
-
+    /// <summary>
+    /// Нажатие кнопок. Это если я захочу поуправлять машинкой
+    /// </summary>
     void KeyDown()
     {
         if (Input.GetKey(KeyCode.W))
@@ -219,7 +229,10 @@ public class Car : MonoBehaviour, IComparable
             Rotation(-maxAngleRotation);
         }
     }
-
+    /// <summary>
+    /// Если столкнулся с препятствием
+    /// </summary>
+    /// <param name="myCollision"></param>
     void OnTriggerEnter(Collider myCollision)
     {
         if(myCollision.tag == "Let")
